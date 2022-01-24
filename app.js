@@ -1,6 +1,7 @@
 const field = document.querySelector("textarea");
 const btn = document.querySelector(".btn");
 
+field.focus()
 btn.onclick = () => { field.value = ''; field.focus() }
 
 const englishChars = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'];
@@ -14,14 +15,21 @@ const lang = {
 
 // Determine language (character set) of input text
 const determineLang = (string) => {
+  let numOfHebChars = 0;
+  let numOfEngChars = 0;
   for (const char of string) {
     if (!englishChars.includes(char) && hebrewChars.includes(char)) {
-      lang.current = hebrewChars;
-      lang.opposite = englishChars;
-    } else if (!hebrewChars.includes(char) && englishChars.includes(char)) {
-      lang.current = englishChars;
-      lang.opposite = hebrewChars;
-    } 
+      numOfHebChars += 1;
+    } else if (!hebrewChars.includes(char) && englishChars.includes(char.toLowerCase())) {
+      numOfEngChars += 1;
+    }
+  }
+  if (numOfEngChars <= numOfHebChars) {
+    lang.current = hebrewChars;
+    lang.opposite = englishChars;
+  } else {
+    lang.current = englishChars;
+    lang.opposite = hebrewChars;
   }
 }
 
@@ -29,7 +37,11 @@ const determineLang = (string) => {
 const convertChars = (string) => {
   let convertedChars = '';
   for (const char of string) {
-    convertedChars += lang.current.includes(char) ? lang.opposite[lang.current.indexOf(char)] : char;
+    if (lang.current == hebrewChars) {
+      convertedChars += lang.current.includes(char) ? lang.opposite[lang.current.indexOf(char)] : char;
+    } else {
+      convertedChars += lang.current.includes(char.toLowerCase()) ? lang.opposite[lang.current.indexOf(char.toLowerCase())] : char;
+    }
   }
   return convertedChars;
 }
